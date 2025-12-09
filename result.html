@@ -291,8 +291,15 @@
     } catch {}
   }
 
-  fetchLiveRank();
-setInterval(fetchLiveRank, 60000); // हर 1 मिनट में एक बार
+</script>
+<script>
+document.getElementById("refreshBtn").addEventListener("click", () => {
+    // Button दबाते ही rank load
+    fetchLiveRank();
+});
+
+// पेज खुलते ही 1 बार अपने आप load
+fetchLiveRank();
 </script>
 
 
