@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <title>CET Live Rank</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 16px;
+    }
+    .card {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #020617;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border: 1px solid #1f2937;
+    }
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .pill {
+      background: #020617;
+      border-radius: 16px;
+      padding: 8px 10px;
+      border: 1px solid #1f2937;
+    }
+    .pill-label {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .pill-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .highlight {
+      font-size: 32px;
+      font-weight: 800;
+      text-align: center;
+      margin: 12px 0;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #1e293b;
+      color: #e5e7eb;
+      border: 1px solid #4b5563;
+      margin-bottom: 8px;
+    }
+    .footer {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 12px;
+      text-align: right;
+    }
+    .error {
+      color: #fecaca;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+    }
+    .share-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      background: #1f2937;
+      color: #e5e7eb;
+      cursor: pointer;
+    }
+    .insta-note {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 10px;
+      line-height: 1.5;
+      text-align: center;
+    }
+    .insta-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .section {
+      max-width: 600px;
+      margin: 16px auto 0;
+      font-size: 11px;
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+    .section h2 {
+      font-size: 12px;
+      margin: 0 0 6px;
+      color: #e5e7eb;
+    }
+    .section ul {
+      padding-left: 18px;
+      margin: 4px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="title">CET Live Rank</div>
+    <div class="subtitle">
+      HSSC CET Marks Card के आधार पर आपका Rank  
+      <br>यह पेज अपने आप हर कुछ सेकंड में अपडेट होता रहेगा (Live Rank)।
+    </div>
+
+    <div id="userInfo" class="grid" style="margin-bottom: 12px;"></div>
+
+    <div class="badge" id="marksBadge">Marks: --</div>
+
+    <div class="highlight" id="overallRank">#--</div>
+    <div style="text-align:center;font-size:12px;color:#9ca3af;margin-bottom:12px;">
+      Overall Rank (सभी Candidates में)
+    </div>
+
+    <div class="grid">
+      <div class="pill">
+        <div class="pill-label">Category-wise Rank</div>
+        <div class="pill-value" id="catRank">--</div>
+      </div>
+      <div class="pill">
+        <div class="pill-label">Gender-wise Rank</div>
+        <div class="pill-value" id="genderRank">--</div>
+      </div>
+      <div class="pill">
+        <div class="pill-label">Age-wise Rank</div>
+        <div class="pill-value" id="ageRank">--</div>
+      </div>
+      <div class="pill">
+        <div class="pill-label">Exam Date-wise Rank</div>
+        <div class="pill-value" id="examDateRank">--</div>
+      </div>
+    </div>
+
+    <button class="share-btn" type="button" onclick="handleShare()">
+      🔗 इस रैंक पेज को दोस्तों के साथ शेयर करें
+    </button>
+
+    <div class="insta-note">
+      अगर आपको रैंक या डेटा में कोई <b>गलती</b> लगती है या कोई सुझाव देना हो,<br>
+      तो Instagram पर मैसेज करके बता सकते हैं। धन्यवाद 🙏  
+      <br>
+      Instagram:
+      <a class="insta-link" href="https://instagram.com/adv_kanha73" target="_blank">@adv_kanha73</a>
+    </div>
+
+    <div class="footer" id="lastUpdated">
+      Rank as on: --
+    </div>
+
+    <div class="error" id="errorBox"></div>
+  </div>
+
+  <div class="section">
+    <h2>महत्वपूर्ण सूचना (Disclaimer)</h2>
+    यह <b>कोई आधिकारिक सरकारी वेबसाइट नहीं</b> है और न ही यह HSSC या किसी सरकारी संस्था से जुड़ी हुई है।  
+    यह केवल विद्यार्थियों की मदद के लिए बनाया गया <b>Unofficial Rank Calculator</b> है।
+
+    <h2 style="margin-top:12px;">Terms &amp; Conditions (शर्तें)</h2>
+    <ul>
+      <li>आप जो भी PDF अपलोड करते हैं, वह केवल रैंक निकालने के उद्देश्य से उपयोग की जाती है।</li>
+      <li>आपका डेटा किसी तीसरे व्यक्ति को शेयर, बेचा या गलत तरीके से उपयोग नहीं किया जाता।</li>
+      <li>रैंक का calculation official नहीं है, यह user-submitted डेटा पर आधारित है।</li>
+      <li>किसी भी तरह की Official Merit List या Final Decision हमेशा HSSC के official result पर आधारित होगा।</li>
+      <li>इस टूल का उपयोग करते समय किसी भी प्रकार की गलतफहमी या नुकसान के लिए developer जिम्मेदार नहीं होगा।</li>
+    </ul>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwN_guHPyNz7FvwC8MCDS0pc_beARnLgPW3N4VVHAWxNNwVu2fQEccsX36Z35tjSRXBVQ/exec";
+
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    function formatDateTime(iso) {
+      if (!iso) return "--";
+      const d = new Date(iso);
+      return d.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+    }
+
+    async function fetchLiveRank() {
+      const roll = getQueryParam("roll");
+      const errorBox = document.getElementById("errorBox");
+
+      if (!roll) {
+        errorBox.textContent = "Roll number नहीं मिला।";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BACKEND_URL}?roll=${encodeURIComponent(roll)}`);
+        const data = await res.json();
+
+        if (data.error) {
+          errorBox.textContent = "Error: " + data.error;
+          return;
+        }
+
+        errorBox.textContent = "";
+
+        const u = data.user;
+
+        document.getElementById("userInfo").innerHTML = `
+          <div class="pill"><div class="pill-label">Name</div><div class="pill-value">${u.name}</div></div>
+          <div class="pill"><div class="pill-label">Roll</div><div class="pill-value">${u.roll}</div></div>
+          <div class="pill"><div class="pill-label">Gender</div><div class="pill-value">${u.gender}</div></div>
+          <div class="pill"><div class="pill-label">Category</div><div class="pill-value">${u.category}</div></div>
+          <div class="pill"><div class="pill-label">DOB</div><div class="pill-value">${u.dob}</div></div>
+          <div class="pill"><div class="pill-label">Exam Date</div><div class="pill-value">${u.exam_date}</div></div>
+        `;
+
+        document.getElementById("marksBadge").textContent = `Marks: ${u.cet_marks}`;
+        document.getElementById("overallRank").textContent = "#" + data.ranks.overallRank;
+        document.getElementById("catRank").textContent = "#" + data.ranks.categoryRank;
+        document.getElementById("genderRank").textContent = "#" + data.ranks.genderRank;
+        document.getElementById("ageRank").textContent = data.ranks.ageRank ? ("#" + data.ranks.ageRank) : "--";
+        document.getElementById("examDateRank").textContent = "#" + data.ranks.examDateRank;
+
+        document.getElementById("lastUpdated").textContent =
+          "Rank as on: " + formatDateTime(data.rankTime) +
+          ` | Total Candidates: ${data.stats.totalCandidates}`;
+      } catch (err) {
+        document.getElementById("errorBox").textContent =
+          "Network error / Backend issue.";
+      }
+    }
+
+    async function handleShare() {
+      const url = window.location.href;
+      const text = "मैंने अपना HSSC CET Live Rank यहाँ चेक किया, आप भी अपना देख सकते हैं:";
+
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: "CET Live Rank", text, url });
+        } else {
+          await navigator.clipboard.writeText(url);
+          alert("लिंक कॉपी किया गया!");
+        }
+      } catch {}
+    }
+
+    fetchLiveRank();
+    setInterval(fetchLiveRank, 10000);
+  </script>
+</body>
+</html>

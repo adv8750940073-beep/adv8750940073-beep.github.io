@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <title>HSSC CET Marks Rank 2025</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- pdf.js for text extraction from PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 16px;
+    }
+    .card {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #020617;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border: 1px solid #1f2937;
+    }
+    h1 {
+      margin: 0 0 4px;
+      font-size: 22px;
+    }
+    .sub {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 16px;
+    }
+    .input-box {
+      border-radius: 16px;
+      border: 1px dashed #374151;
+      padding: 12px;
+      background: #020617;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    input[type="file"] {
+      width: 100%;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+    button {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .status {
+      font-size: 12px;
+      color: #a5b4fc;
+      min-height: 18px;
+      margin-top: 4px;
+    }
+    .error {
+      color: #fecaca;
+      font-size: 12px;
+      margin-top: 4px;
+      min-height: 18px;
+    }
+    .small {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+    .section {
+      max-width: 480px;
+      margin: 12px auto 0;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .section h2 {
+      font-size: 12px;
+      margin: 0 0 4px;
+      color: #e5e7eb;
+    }
+    .link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>HSSC CET Marks Rank 2025</h1>
+    <div class="sub">
+      सिर्फ आधिकारिक <b>HSSC CET Marks Card PDF</b> अपलोड करें।  
+      सिस्टम PDF से आपके Marks निकाल कर <b>ऑटोमैटिक रैंक</b> calculate करेगा।  
+      रैंक उतनी ही सटीक होगी जितने ज्यादा लोग इस लिंक को शेयर करके यहाँ अपनी PDF अपलोड करेंगे।
+    </div>
+
+    <div class="input-box">
+      <div style="margin-bottom:8px;font-size:12px;color:#9ca3af;">
+        PDF चुनें (सिर्फ Marks Card):
+      </div>
+      <input type="file" id="pdfInput" accept="application/pdf" />
+    </div>
+
+    <button id="uploadBtn" onclick="handleUpload()">
+      Upload &amp; Submit (रैंक देखें)
+    </button>
+
+    <div class="status" id="statusText"></div>
+    <div class="error" id="errorText"></div>
+
+    <div class="small">
+      Instagram पर connect करें:
+      <a class="link" href="https://instagram.com/adv_kanha73" target="_blank">
+        @adv_kanha73
+      </a>
+      <br />
+      Note: गलत / Blank / Non-HSSC PDF अपलोड करने पर एरर दिखेगा।
+    </div>
+  </div>
+
+  <!-- Disclaimer + Terms -->
+  <div class="section">
+    <h2>महत्वपूर्ण सूचना (Disclaimer)</h2>
+    <p>
+      यह <b>कोई आधिकारिक सरकारी वेबसाइट नहीं है</b> और न ही यह HSSC या किसी सरकारी संस्था से जुड़ी हुई है।  
+      यह सिर्फ विद्यार्थियों की मदद के लिए बनाया गया <b>Unofficial Rank Calculator</b> है।
+    </p>
+
+    <h2>Terms &amp; Conditions (शर्तें)</h2>
+    <ul style="padding-left:18px;margin:4px 0 0;">
+      <li>आप जो भी PDF अपलोड करेंगे, वह केवल <b>रैंक निकालने</b> के लिए उपयोग की जाएगी।</li>
+      <li>यह वेबसाइट आपका डेटा <b>बेचती नहीं</b>, किसी तीसरे व्यक्ति को <b>शेयर नहीं करती</b> और गलत तरीके से उपयोग नहीं करती।</li>
+      <li>रैंक का calculation आपके द्वारा दी गई जानकारी और अन्य users के डाटा पर आधारित है, इसलिए यह <b>official merit list</b> नहीं है।</li>
+      <li>किसी भी तरह का अंतिम निर्णय हमेशा <b>HSSC के official result और notice</b> के आधार पर ही मान्य होगा।</li>
+      <li>इस टूल का उपयोग करते समय आप मानते हैं कि किसी भी प्रकार के नुकसान/गलतफहमी के लिए developer जिम्मेदार नहीं होगा।</li>
+    </ul>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwN_guHPyNz7FvwC8MCDS0pc_beARnLgPW3N4VVHAWxNNwVu2fQEccsX36Z35tjSRXBVQ/exec";
+
+    if (window["pdfjsLib"]) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
+
+    const statusEl = document.getElementById("statusText");
+    const errorEl = document.getElementById("errorText");
+    const uploadBtn = document.getElementById("uploadBtn");
+
+    function setStatus(msg) { statusEl.textContent = msg || ""; }
+    function setError(msg)  { errorEl.textContent = msg || ""; }
+
+    async function extractTextFromPDF(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+      let fullText = "";
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map(it => it.str).join(" ");
+        fullText += "\n" + pageText;
+      }
+      return fullText;
+    }
+
+    function validateHsscPdf(text) {
+      const mustHave = [
+        "HARYANA STAFF SELECTION COMMISSION",
+        "MARKS CARD",
+        "COMMON ELIGIBILITY TEST",
+        "Registration Number",
+        "Roll Number",
+        "Candidate's Name",
+        "Gender",
+        "Date Of Birth",
+        "Category",
+        "CET MARKS"
+      ];
+      const upper = text.toUpperCase();
+      return mustHave.every(word => upper.includes(word.toUpperCase()));
+    }
+
+    function matchValue(text, pattern) {
+      const m = text.match(pattern);
+      return m && m[1] ? m[1].trim() : "";
+    }
+
+    function parseHssc(text) {
+      const t = text.replace(/\s+/g, " ");
+      return {
+        registration: matchValue(t, /Registration Number\s+(\S+)/i),
+        roll:         matchValue(t, /Roll Number\s+(\S+)/i),
+        name:         matchValue(t, /Candidate'?s Name\s+([A-Z ]+)/i),
+        gender:       matchValue(t, /Gender\s+([A-Za-z]+)/i),
+        dob:          matchValue(t, /Date Of Birth\s+([0-9]{1,2}[-\/.][0-9]{1,2}[-\/.][0-9]{2,4})/i),
+        mother:       matchValue(t, /Mother'?s Name\s+([A-Z ]+)/i),
+        father:       matchValue(t, /Father'?s Name\s+([A-Z ]+)/i),
+        mobile:       matchValue(t, /Mobile No.*?([0-9]{10})/i),
+        category:     matchValue(t, /Category\s+([A-Z]+)/i),
+        subcategory:  matchValue(t, /Sub-Category\s+([A-Z\-]+)/i) || "-",
+        exam_date:    matchValue(t, /Date of Exam\s+([0-9]{1,2}[-\/.][0-9]{1,2}[-\/.][0-9]{2,4})/i),
+        shift:        matchValue(t, /Shift of Exam\s+([A-Za-z]+)/i),
+        cet_marks:    matchValue(t, /\(in figure\)\s*([0-9.]+)/i)
+      };
+    }
+
+    function isParsedDataValid(d) {
+      return d.registration && d.roll && d.name && d.gender &&
+             d.dob && d.category && d.cet_marks;
+    }
+
+    async function handleUpload() {
+      setStatus("");
+      setError("");
+
+      const file = document.getElementById("pdfInput").files[0];
+
+      if (!file) {
+        setError("कृपया पहले PDF चुनें।");
+        return;
+      }
+      if (file.type !== "application/pdf") {
+        setError("सिर्फ PDF फाइल ही चुनें।");
+        return;
+      }
+
+      uploadBtn.disabled = true;
+      setStatus("PDF पढ़ी जा रही है...");
+
+      try {
+        const text = await extractTextFromPDF(file);
+
+        if (!validateHsscPdf(text)) {
+          setError("यह HSSC CET Marks Card PDF नहीं लग रही।");
+          uploadBtn.disabled = false;
+          setStatus("");
+          return;
+        }
+
+        setStatus("डेटा निकाला जा रहा है...");
+        const user = parseHssc(text);
+
+        if (!isParsedDataValid(user)) {
+          setError("PDF से जरूरी डेटा नहीं मिला।");
+          uploadBtn.disabled = false;
+          setStatus("");
+          return;
+        }
+
+        setStatus("Backend में सेव करने की request भेज दी गई है...");
+
+        try {
+          fetch(BACKEND_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify(user)
+          }).catch((e) => {
+            console.log("Backend fetch error (ignored):", e);
+          });
+        } catch (e) {
+          console.log("Fetch throw हुआ:", e);
+        }
+
+        setTimeout(() => {
+          window.location.href = `result.html?roll=${encodeURIComponent(user.roll)}`;
+        }, 800);
+
+      } catch (err) {
+        console.error(err);
+        setError("कुछ गड़बड़ हो गई (Network / Script error)।");
+        setStatus("");
+        uploadBtn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
