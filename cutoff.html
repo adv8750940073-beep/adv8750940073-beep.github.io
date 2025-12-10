@@ -4,231 +4,359 @@
     <meta charset="UTF-8" />
     <title>CET Mains – Vacancy-wise Cutoff</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <style>
       * { box-sizing: border-box; }
+      :root {
+        --bg: #020617;
+        --card-bg: rgba(15, 23, 42, 0.98);
+        --border: rgba(31, 41, 55, 0.95);
+        --muted: #9ca3af;
+        --text: #e5e7eb;
+        --shadow-soft: 0 20px 40px rgba(15, 23, 42, 0.9);
+      }
       body {
         margin: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: #020617;
-        color: #e5e7eb;
+        font-family: system-ui, sans-serif;
+        background: radial-gradient(circle at top, #1e293b 0, #020617 55%), radial-gradient(circle at bottom, #111827 0, #020617 55%);
+        color: var(--text);
         min-height: 100vh;
         padding: 16px;
       }
-      .wrapper {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-      .header {
-        text-align: center;
-        margin-bottom: 14px;
-      }
-      .header h1 {
-        margin: 4px 0;
-        font-size: 1.2rem;
-      }
+      .wrapper { max-width: 1000px; margin: 0 auto; }
+
+      /* HEADER */
+      .header { text-align: center; margin-bottom: 14px; }
+      .header h1 { margin: 6px 0 2px; font-size: 1.28rem; }
+      .header p { margin: 0; font-size: 0.78rem; color: var(--muted); }
+
       .badge {
         display: inline-flex;
         align-items: center;
-        padding: 3px 9px;
+        padding: 4px 12px;
         border-radius: 999px;
-        background: rgba(56, 189, 248, 0.12);
-        border: 1px solid rgba(56, 189, 248, 0.4);
+        background: rgba(129, 140, 248, 0.15);
+        border: 1px solid rgba(129, 140, 248, 0.6);
         font-size: 0.7rem;
-        color: #bae6fd;
+        gap: 6px;
       }
-      .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 10px;
+      .badge-dot {
+        width: 6px; height: 6px;
+        background: #4ade80; border-radius: 999px;
       }
-      .controls input {
-        flex: 1;
-        min-width: 120px;
-        padding: 8px;
+
+      /* LAYOUT */
+      .layout-two {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 10px;
+      }
+      @media(max-width: 780px){
+        .layout-two { grid-template-columns: 1fr; }
+      }
+
+      /* CARDS */
+      .card, .table-card {
+        padding: 12px;
+        background: var(--card-bg);
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      /* INPUTS */
+      .controls-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+      .field { flex: 1; min-width: 150px; }
+      .field.small { flex: 0 0 110px; }
+      .field label { font-size: 0.7rem; color: var(--muted); margin-bottom: 3px; display: block; }
+
+      .field input, .field select {
+        width: 100%;
+        padding: 7px 10px;
         border-radius: 999px;
-        border: 1px solid rgba(75, 85, 99, 0.8);
+        background: rgba(15,23,42,0.96);
+        border: 1px solid rgba(75,85,99,0.8);
+        color: var(--text);
+        outline: none;
+        font-size: 0.82rem;
+      }
+
+      /* TABLE */
+      .table-wrapper {
+        border: 1px solid rgba(75,85,99,0.8);
+        border-radius: 12px;
+        overflow: hidden;
         background: #020617;
-        color: #e5e7eb;
-        font-size: 0.8rem;
+        margin-top: 4px;
       }
-      .controls input.small {
-        max-width: 110px;
-        flex: 0 0 110px;
-      }
-      .controls button {
-        padding: 8px 16px;
+      table { width: 100%; border-collapse: collapse; }
+      th { background: #020617; font-size: 0.75rem; padding: 6px; }
+      td { padding: 6px; font-size: 0.78rem; }
+
+      tr:nth-child(even) td { background: rgba(15,23,42,0.98); }
+
+      /* CATEGORY CHIPS */
+      .chip { padding: 2px 8px; border-radius: 999px; font-size: 0.7rem; }
+      .chip-gen { background: rgba(55,65,81,0.9); }
+      .chip-cat { background: rgba(30,64,175,0.9); }
+      .chip-ews { background: rgba(132,204,22,0.9); color: #021013; }
+
+      /* BUTTON */
+      .calc-btn {
+        padding: 8px 18px;
         border-radius: 999px;
         border: none;
-        background: linear-gradient(90deg, #2563eb, #4f46e5);
-        color: #f9fafb;
+        background: linear-gradient(120deg,#2563eb,#4f46e5,#a855f7);
+        color: #fff;
         font-size: 0.8rem;
-        font-weight: 600;
         cursor: pointer;
-        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
       }
-      .controls button:disabled { opacity: 0.6; cursor: default; }
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.78rem;
-        background: #020617;
-        border-radius: 14px;
-        overflow: hidden;
-        border: 1px solid rgba(75, 85, 99, 0.8);
-      }
-      th, td {
-        padding: 6px 7px;
-        border-bottom: 1px solid rgba(31, 41, 55, 0.9);
-        text-align: left;
-      }
-      th {
-        background: #0f172a;
-        font-weight: 600;
-        font-size: 0.75rem;
-      }
-      tr:nth-child(even) td {
-        background: rgba(15, 23, 42, 0.9);
-      }
-      .chip {
-        border-radius: 999px;
-        padding: 2px 8px;
-        font-size: 0.7rem;
-        display: inline-block;
-      }
-      .chip-gen { background: rgba(55, 65, 81, 0.84); }
-      .chip-cat { background: rgba(30, 64, 175, 0.8); }
-      .chip-ews { background: rgba(132, 204, 22, 0.8); color: #021013; }
-
-      .info {
-        font-size: 0.7rem;
-        color: #9ca3af;
-        margin-top: 6px;
-      }
+      /* ERROR */
       .error {
-        margin-top: 8px;
-        font-size: 0.75rem;
-        color: #fecaca;
-        background: rgba(127, 29, 29, 0.4);
-        border-radius: 10px;
-        padding: 8px 10px;
-        border: 1px solid rgba(248, 113, 113, 0.7);
+        padding: 8px;
+        background: rgba(127,29,29,0.4);
+        border: 1px solid rgba(248,113,113,0.7);
+        border-radius: 8px;
         display: none;
+        margin-top: 6px;
+        color: #fecaca;
       }
-      .footer {
-        margin-top: 8px;
-        font-size: 0.7rem;
-        color: #6b7280;
+
+      /* FOOTER SOCIAL (Telegram, YouTube, Website) */
+      .social-footer {
+        margin-top: 20px;
+        padding: 12px;
+        border-radius: 18px;
+        border: 1px solid rgba(31,41,55,0.9);
+        background: rgba(15,23,42,0.95);
       }
+      .social-footer-title { font-weight: 600; margin-bottom: 6px; }
+      .social-footer-sub { color: var(--muted); font-size: 0.74rem; margin-bottom: 8px; }
+      .social-footer-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+      .social-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(15,23,42,0.95);
+        border: 1px solid rgba(75,85,99,0.9);
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.8rem;
+      }
+      .social-pill img { width: 18px; height: 18px; }
+
+      .insta { border-color:#facc15; background:rgba(250,204,21,0.14); }
+      .wh { border-color:#22c55e; background:rgba(34,197,94,0.18); }
+      .tg { border-color:#38bdf8; background:rgba(56,189,248,0.18); }
+      .yt { border-color:#ef4444; background:rgba(248,113,113,0.18); }
+      .web{ border-color:#818cf8; background:rgba(129,140,248,0.18); }
     </style>
   </head>
+
   <body>
     <div class="wrapper">
       <div class="header">
-        <div class="badge">CET Mains Cutoff Simulator (Unofficial)</div>
+        <div class="badge">
+          <span class="badge-dot"></span>
+          CET Mains Cutoff Simulator
+        </div>
         <h1>Vacancy-wise अनुमानित Cutoff (Category wise)</h1>
+        <p>Haryana CET 2024 की vacancies के लिए सिर्फ seats डालकर cutoff देखें।</p>
       </div>
 
-      <div class="controls">
-        <input
-          type="text"
-          id="vacancyName"
-          placeholder="Vacancy नाम लिखें (जैसे: Haryana Police Constable – 5000 post)"
-        />
+      <div class="layout-two">
+        <!-- LEFT PANEL -->
+        <div class="card">
+          <div class="card-title">Vacancy Details</div>
+
+          <!-- DROPDOWN -->
+          <div class="controls-row">
+            <div class="field">
+              <label>Vacancy चुनें</label>
+              <select id="vacancySelect">
+                <option value="">– Select Vacancy –</option>
+
+                <optgroup label="Haryana Police">
+                  <option value="Haryana Police Constable (GD)">Constable GD</option>
+                  <option value="Haryana Police Constable (Commando)">Commando Wing</option>
+                </optgroup>
+
+                <optgroup label="Group C">
+                  <option value="Group C Clerk/Office">Clerk / Office</option>
+                  <option value="Group C Technical">Technical (JE etc.)</option>
+                </optgroup>
+
+                <optgroup label="Others">
+                  <option value="Group D">Group D</option>
+                  <option value="Patwari / Gram Sachiv">Patwari / Gram Sachiv</option>
+                </optgroup>
+
+                <option value="__custom">🔧 Custom Vacancy</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- VACANCY NAME -->
+          <div class="controls-row">
+            <div class="field">
+              <label>Vacancy Name</label>
+              <input type="text" id="vacancyName" placeholder="Auto-filled…" />
+            </div>
+          </div>
+
+          <!-- SEATS -->
+          <div class="controls-row">
+            <div class="field small"><label>GEN</label><input id="genSeats" type="number" min="0"></div>
+            <div class="field small"><label>SC</label><input id="scSeats" type="number" min="0"></div>
+            <div class="field small"><label>BCA</label><input id="bcaSeats" type="number" min="0"></div>
+            <div class="field small"><label>BCB</label><input id="bcbSeats" type="number" min="0"></div>
+            <div class="field small"><label>EWS</label><input id="ewsSeats" type="number" min="0"></div>
+            <div class="field small"><label>OSC</label><input id="oscSeats" type="number" min="0"></div>
+            <div class="field small"><label>DSC</label><input id="dscSeats" type="number" min="0"></div>
+          </div>
+
+          <button class="calc-btn" id="calcBtn">⚡ Cutoff निकालें</button>
+
+          <div id="errorBox" class="error"></div>
+        </div>
+
+        <!-- RIGHT PANEL TABLE -->
+        <div class="table-card">
+          <div class="card-title">Category-wise Cutoff</div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Seats</th>
+                  <th>Sheet में Candidates</th>
+                  <th>Cutoff</th>
+                </tr>
+              </thead>
+              <tbody id="cutoffBody"></tbody>
+            </table>
+          </div>
+
+          <p class="info" id="infoText">
+            Seats भरकर "Cutoff निकालें" दबाएँ।
+          </p>
+          <div class="footer">
+            Sheet total: <span id="totalCandText">--</span>  
+            &nbsp;·&nbsp;  
+            Last calc: <span id="calcTimeText">--</span>
+          </div>
+        </div>
       </div>
+            <!-- SOCIAL FOOTER: Instagram + WhatsApp + (future) Telegram / YouTube / Website -->
+      <div class="social-footer">
+        <p class="social-footer-title">
+          CET updates, cutoff analysis, PDFs & notifications एक जगह:
+        </p>
+        <p class="social-footer-sub">
+          Instagram पर reels/analysis, WhatsApp & Telegram पर instant notification,
+          YouTube पर detailed videos, और website पर पूरा material मिलेगा।
+        </p>
 
-      <div class="controls">
-        <input
-          type="number"
-          id="genSeats"
-          class="small"
-          placeholder="GEN seats"
-          min="0"
-        />
-        <input
-          type="number"
-          id="scSeats"
-          class="small"
-          placeholder="SC seats"
-          min="0"
-        />
-        <input
-          type="number"
-          id="bcaSeats"
-          class="small"
-          placeholder="BCA seats"
-          min="0"
-        />
-        <input
-          type="number"
-          id="bcbSeats"
-          class="small"
-          placeholder="BCB seats"
-          min="0"
-        />
-        <input
-          type="number"
-          id="ewsSeats"
-          class="small"
-          placeholder="EWS seats"
-          min="0"
-        />
-        <button id="calcBtn">Cutoff निकालें</button>
+        <div class="social-footer-row">
+          <!-- Instagram -->
+          <a
+            href="https://instagram.com/adv_kanha73"
+            target="_blank"
+            class="social-pill insta"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+              alt="Instagram"
+            />
+            <span>Instagram · @adv_kanha73</span>
+          </a>
+
+          <!-- WhatsApp Channel -->
+          <a
+            href="https://whatsapp.com/channel/0029Vb6kNhq8fewpVWfe1m1s"
+            target="_blank"
+            class="social-pill wh"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+              alt="WhatsApp"
+            />
+            <span>WhatsApp Channel</span>
+          </a>
+
+          <!-- Telegram (baad me apna link daal dena) -->
+          <a
+            href="https://t.me/your_telegram_channel"
+            target="_blank"
+            class="social-pill tg"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"
+              alt="Telegram"
+            />
+            <span>Telegram Channel</span>
+          </a>
+
+          <!-- YouTube (baad me change karna) -->
+          <a
+            href="https://youtube.com/@your_youtube_handle"
+            target="_blank"
+            class="social-pill yt"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg"
+              alt="YouTube"
+            />
+            <span>YouTube Channel</span>
+          </a>
+
+          <!-- Website (jab bhi ready ho) -->
+          <a
+            href="https://your-website-url.com"
+            target="_blank"
+            class="social-pill web"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/e/e0/OOjs_UI_icon_globe-progressive.svg"
+              alt="Website"
+            />
+            <span>Official Website</span>
+          </a>
+        </div>
       </div>
-
-      <div id="errorBox" class="error"></div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>Seats</th>
-            <th>Sheet में Total Candidates</th>
-            <th>अनुमानित Cutoff Marks</th>
-          </tr>
-        </thead>
-        <tbody id="cutoffBody"></tbody>
-      </table>
-
-      <p class="info" id="infoText">
-        ऊपर हर category के लिए कितना seat है, वो भरकर “Cutoff निकालें” दबाएँ।  
-        Cutoff पूरी तरह user-submitted डेटा पर आधारित है, official नहीं है।
-      </p>
-<div style="
-    margin-top:18px;
-    text-align:center;
-    font-size:14px;
-">
-  <a href="https://instagram.com/adv_kanha73" 
-     target="_blank" 
-     style="text-decoration:none; color:#f9fafb; display:inline-flex; align-items:center; gap:6px;">
-
-    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" 
-         alt="Instagram" 
-         style="width:20px; height:20px; border-radius:4px;" />
-
-    <span style="font-weight:600;">@adv_kanha73</span>
-  </a>
-</div>
-
-      <div class="footer" id="footerInfo">
-        Sheet total candidates: <span id="totalCandText">--</span> ·
-        Last calc: <span id="calcTimeText">--</span>
-      </div>
-    </div>
+    </div> <!-- .wrapper end -->
 
     <script>
-      // ⬇⬇⬇ यहां अपना Apps Script Web App URL डालें (जो /exec से खत्म होता है) ⬇⬇⬇
+      // 🔗 Yahan apna Apps Script Web App URL (जो /exec से खत्म होता है)
       const BACKEND_URL =
         "https://script.google.com/macros/s/AKfycbwHo7ecIYJP-ekEOfsCnD1BUtbSJ_nF6ZNZ2vi_hsQb6fyA0GBurHQTxWbPrm0DKZzOIQ/exec";
 
+      const vacancySelectEl = document.getElementById("vacancySelect");
       const vacancyNameEl = document.getElementById("vacancyName");
+
       const genSeatsEl = document.getElementById("genSeats");
       const scSeatsEl = document.getElementById("scSeats");
       const bcaSeatsEl = document.getElementById("bcaSeats");
       const bcbSeatsEl = document.getElementById("bcbSeats");
       const ewsSeatsEl = document.getElementById("ewsSeats");
+      const oscSeatsEl = document.getElementById("oscSeats");
+      const dscSeatsEl = document.getElementById("dscSeats");
+
       const calcBtn = document.getElementById("calcBtn");
       const cutoffBody = document.getElementById("cutoffBody");
       const errorBox = document.getElementById("errorBox");
@@ -247,11 +375,11 @@
 
       function renderCategoryChip(cat) {
         let cls = "chip";
-        const c = cat.toUpperCase();
+        const c = (cat || "").toUpperCase().trim();
         if (c === "GEN") cls += " chip-gen";
         else if (c === "EWS") cls += " chip-ews";
         else cls += " chip-cat";
-        return `<span class="${cls}">${c}</span>`;
+        return '<span class="' + cls + '">' + c + "</span>";
       }
 
       function renderCutoffTable(cutoffs) {
@@ -263,10 +391,10 @@
           return;
         }
         cats.forEach((cat) => {
-          const row = cutoffs[cat];
-          const tr = document.createElement("tr");
+          const row = cutoffs[cat] || {};
           const cutoff =
             row.cutoff == null || row.cutoff === "" ? "--" : row.cutoff;
+          const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${renderCategoryChip(cat)}</td>
             <td>${row.seats || 0}</td>
@@ -277,28 +405,35 @@
         });
       }
 
+      function getSeatValue(el) {
+        return parseInt(el.value || "0", 10) || 0;
+      }
+
       async function calculateCutoff() {
         try {
           clearError();
           infoText.textContent = "Cutoff calculation चल रहा है...";
           calcBtn.disabled = true;
-          calcBtn.textContent = "⏳ Calculating...";
+          calcBtn.textContent = "Calculating…";
 
           const params = new URLSearchParams();
           params.set("mode", "cutoff");
-          const vacancyName = vacancyNameEl.value.trim();
+
+          const vacancyName = (vacancyNameEl.value || "").trim();
           if (vacancyName) params.set("vacancyName", vacancyName);
 
-          const gen = parseInt(genSeatsEl.value || "0", 10) || 0;
-          const sc = parseInt(scSeatsEl.value || "0", 10) || 0;
-          const bca = parseInt(bcaSeatsEl.value || "0", 10) || 0;
-          const bcb = parseInt(bcbSeatsEl.value || "0", 10) || 0;
-          const ews = parseInt(ewsSeatsEl.value || "0", 10) || 0;
+          const gen = getSeatValue(genSeatsEl);
+          const sc = getSeatValue(scSeatsEl);
+          const bca = getSeatValue(bcaSeatsEl);
+          const bcb = getSeatValue(bcbSeatsEl);
+          const ews = getSeatValue(ewsSeatsEl);
+          const osc = getSeatValue(oscSeatsEl);
+          const dsc = getSeatValue(dscSeatsEl);
 
-          if (gen + sc + bca + bcb + ews === 0) {
-            showError("कम से कम किसी एक category में seat भरें।");
-            infoText.textContent =
-              "Seats भरकर दुबारा “Cutoff निकालें” दबाएँ।";
+          const totalSeats = gen + sc + bca + bcb + ews + osc + dsc;
+          if (totalSeats === 0) {
+            showError("कम से कम किसी एक category में seats भरें।");
+            infoText.textContent = "Seats भरकर दुबारा try करें।";
             return;
           }
 
@@ -307,6 +442,8 @@
           if (bca) params.set("bca", String(bca));
           if (bcb) params.set("bcb", String(bcb));
           if (ews) params.set("ews", String(ews));
+          if (osc) params.set("osc", String(osc));
+          if (dsc) params.set("dsc", String(dsc));
 
           const url = BACKEND_URL + "?" + params.toString();
           const res = await fetch(url, { cache: "no-store" });
@@ -318,7 +455,7 @@
           const data = await res.json();
           if (data.error) {
             showError(data.error);
-            infoText.textContent = "Error आया, ऊपर message देखें।";
+            infoText.textContent = "Backend से error आया, message ऊपर देखें।";
             return;
           }
 
@@ -328,35 +465,48 @@
             data.totalCandidates != null ? data.totalCandidates : "--";
 
           if (data.calcTime) {
-            try {
-              const dt = new Date(data.calcTime);
-              calcTimeText.textContent =
-                dt.toLocaleDateString("hi-IN") +
-                " " +
-                dt.toLocaleTimeString("hi-IN", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-            } catch (e) {
-              calcTimeText.textContent = data.calcTime;
-            }
+            const dt = new Date(data.calcTime);
+            calcTimeText.textContent =
+              dt.toLocaleDateString("hi-IN") +
+              " " +
+              dt.toLocaleTimeString("hi-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
           } else {
             calcTimeText.textContent = "--";
           }
 
           infoText.textContent =
-            "Cutoff calculation user-submitted data पर आधारित है (Unofficial)।";
+            "Cutoff calculation user-submitted CET data पर आधारित है (Unofficial)।";
         } catch (err) {
-          console.log(err);
-          showError("Network / Backend error. बाद में दुबारा कोशिश करें।");
+          console.error(err);
+          showError("Network / backend error. कुछ देर बाद फिर से कोशिश करें।");
           infoText.textContent = "कुछ गड़बड़ हुई, बाद में try करें।";
         } finally {
           calcBtn.disabled = false;
-          calcBtn.textContent = "Cutoff निकालें";
+          calcBtn.textContent = "⚡ Cutoff निकालें";
         }
       }
+
+      // Vacancy dropdown → auto-fill vacancyName
+      vacancySelectEl.addEventListener("change", () => {
+        const v = vacancySelectEl.value;
+        if (!v) return;
+        if (v === "__custom") {
+          vacancyNameEl.value = "";
+          vacancyNameEl.placeholder = "यहाँ अपनी vacancy का नाम लिखें…";
+          vacancyNameEl.focus();
+        } else {
+          vacancyNameEl.value = v;
+        }
+      });
 
       calcBtn.addEventListener("click", calculateCutoff);
     </script>
   </body>
 </html>
+
+
+
+
