@@ -291,8 +291,21 @@
         }
 
         setTimeout(() => {
-          window.location.href = `result.html?roll=${encodeURIComponent(user.roll)}`;
-        }, 800);
+  // 1) WhatsApp Channel नई tab में open करो
+  try {
+    window.open(
+      "https://whatsapp.com/channel/0029Vb6kNhq8fewpVWfe1m1s",
+      "_blank"
+    );
+  } catch (e) {
+    console.log("Popup blocked:", e);
+  }
+
+  // 2) थोड़े delay के बाद result.html open करो
+  setTimeout(() => {
+    window.location.href = `result.html?roll=${encodeURIComponent(user.roll)}`;
+  }, 1000); // delay adjust कर सकते हो
+}, 200);
 
       } catch (err) {
         console.error(err);
