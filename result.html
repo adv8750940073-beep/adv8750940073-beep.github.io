@@ -5,6 +5,7 @@
   <title>CET Live Rank – Result</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    /* (आपका मौजूदा CSS यहाँ बिना बदले रखा गया है) */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -359,7 +360,7 @@
       </button>
 
       <button
-  onclick="openWhatsAppOnly();"
+  id="cutoffBtn"
   style="
     width:100%;
     margin-top:10px;
@@ -511,42 +512,57 @@
     const BACKEND_URL =
       "https://script.google.com/macros/s/AKfycbwHo7ecIYJP-ekEOfsCnD1BUtbSJ_nF6ZNZ2vi_hsQb6fyA0GBurHQTxWbPrm0DKZzOIQ/exec";
 
-function openWhatsAppThenLoad(roll) {
-  // WhatsApp new tab me open
-  try {
-    window.open(
-      "https://whatsapp.com/channel/0029Vb6kNhq8fewpVWfe1m1s",
-      "_blank"
-    );
-  } catch (e) {
-    console.log("Popup blocked:", e);
-  }
+    /***********************
+     * Simple toggle setting
+     *
+     * CHANGE THIS VALUE to control behavior:
+     *
+     *  - false => केवल WhatsApp खुलेगा (cutoff.html नहीं खुलेगा)
+     *  - true  => WhatsApp खुलेगा और 700ms बाद cutoff.html भी खुलेगा
+     *
+     * बस नीचे वाली लाइन में true/false set कर दें जब भी बदलना हो।
+     ***********************/
+    const ENABLE_CUTOFF = false; // <-- यहाँ true या false डालें
 
-  // थोड़े delay के बाद rank load
-  setTimeout(() => {
-    fetchLiveRank(roll);
-  }, 700);
-}
+    // ---------------------------------------
+    // Rank load function (unchanged)
+    // ---------------------------------------
+    function openWhatsAppThenLoad(roll) {
+      try {
+        window.open(
+          "https://whatsapp.com/channel/0029Vb6kNhq8fewpVWfe1m1s",
+          "_blank"
+        );
+      } catch (e) {
+        console.log("Popup blocked:", e);
+      }
 
-    
-    function openWhatsAppOnly() {
-  // 1) WhatsApp channel new tab me open karo
-  try {
-    window.open(
-      "https://whatsapp.com/channel/0029Vb6kNhq8fewpVWfe1m1s",
-      "_blank"
-    );
-  } catch (e) {
-    console.log("WhatsApp open blocked:", e);
-  }
+      // थोड़े delay के बाद rank load
+      setTimeout(() => {
+        fetchLiveRank(roll);
+      }, 700);
+    }
 
-  // 2) Thoda sa delay dekar current tab me cutoff.html open karo
-  setTimeout(function () {
-    window.location.href = "cutoff.html";
-  }, 700); // 700ms delay, chahe to 500 ya 1000 bhi kar sakte ho
-}
+    // ---------------------------------------
+    // Unified handler for Cutoff button (respects ENABLE_CUTOFF)
+    // ---------------------------------------
+    function handleCutoffButtonClick() {
+      try {
+        window.open("https://whatsapp.com/channel/0029Vb6kNhq8fewpVWfe1m1s", "_blank");
+      } catch (e) {
+        console.log("WhatsApp open blocked:", e);
+      }
 
-    
+      if (ENABLE_CUTOFF) {
+        setTimeout(() => {
+          window.location.href = "cutoff.html";
+        }, 700);
+      }
+    }
+
+    // ---------------------------------------
+    // Helpers & Rank fetch logic (kept & fixed)
+    // ---------------------------------------
     function getQueryParam(name) {
       const params = new URLSearchParams(window.location.search);
       return params.get(name);
@@ -556,7 +572,8 @@ function openWhatsAppThenLoad(roll) {
       const box = document.getElementById("errorBox");
       box.textContent = msg;
       box.style.display = "block";
-      document.getElementById("infoText").textContent = "Error आया, ऊपर message देखें।";
+      const info = document.getElementById("infoText");
+      if (info) info.textContent = "Error आया, ऊपर message देखें।";
     }
 
     function clearError() {
@@ -580,13 +597,19 @@ function openWhatsAppThenLoad(roll) {
         }
 
         if (!roll) {
-          document.getElementById("infoText").textContent =
+          const info = document.getElementById("infoText");
+          if (info) info.textContent =
             "कृपया अपना roll number भरें और Refresh Rank दबाएँ।";
           document.getElementById("rollInputBox").style.display = "block";
           return;
         }
 
-        document.getElementById("rollInputBox").style.display = "roll" in (getQueryParam("roll") ? {} : {}) ? "none" : "block";
+        // सही show/hide logic: अगर URL में roll है तो input छुपाओ
+        if (getQueryParam("roll")) {
+          document.getElementById("rollInputBox").style.display = "none";
+        } else {
+          document.getElementById("rollInputBox").style.display = "block";
+        }
 
         document.getElementById("rollBadge").textContent = "Roll: " + roll;
         document.getElementById("infoText").textContent = "Rank data load हो रहा है...";
@@ -654,20 +677,47 @@ function openWhatsAppThenLoad(roll) {
         showError("Network error / Backend issue. बाद में दुबारा कोशिश करें।");
       } finally {
         const btn = document.getElementById("refreshBtn");
-        btn.disabled = false;
-        btn.innerHTML = "🔄 Refresh Rank";
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = "🔄 Refresh Rank";
+        }
       }
     }
 
-    // Refresh बटन क्लिक पर rank load करें
-    document.getElementById("refreshBtn").addEventListener("click", () => {
-  const roll = getQueryParam("roll") || document.getElementById("rollInput").value.trim();
-  openWhatsAppThenLoad(roll);
-});
+    // ---------- Event wiring ----------
+    document.addEventListener("DOMContentLoaded", () => {
+      // Wire cutoff button
+      const cutoffBtn = document.getElementById("cutoffBtn");
+      if (cutoffBtn) cutoffBtn.addEventListener("click", handleCutoffButtonClick);
 
+      // Wire refresh button
+      const refreshBtn = document.getElementById("refreshBtn");
+      if (refreshBtn) {
+        refreshBtn.addEventListener("click", () => {
+          const roll = getQueryParam("roll") || document.getElementById("rollInput").value.trim();
+          openWhatsAppThenLoad(roll);
+        });
+      }
 
-    // अगर URL में पहले से roll है तो page load पर एक बार auto load
-    window.addEventListener("load", () => {
+      // Wire Go button for manual roll
+      const goBtn = document.getElementById("rollGoBtn");
+      if (goBtn) {
+        goBtn.addEventListener("click", () => {
+          const roll = document.getElementById("rollInput").value.trim();
+          if (!roll) {
+            showError("कृपया roll number भरें।");
+            return;
+          }
+          clearError();
+          const params = new URLSearchParams(window.location.search);
+          params.set("roll", roll);
+          const newUrl = window.location.pathname + "?" + params.toString() + window.location.hash;
+          window.history.replaceState({}, "", newUrl);
+          openWhatsAppThenLoad(roll);
+        });
+      }
+
+      // On initial page load, auto-load if roll provided
       const rollFromUrl = getQueryParam("roll");
       if (rollFromUrl) {
         document.getElementById("rollInputBox").style.display = "none";
@@ -678,25 +728,6 @@ function openWhatsAppThenLoad(roll) {
           "Roll URL से नहीं मिला। कृपया roll भरकर Refresh Rank दबाएँ।";
       }
     });
-
-    // "Go" बटन से भी same काम
-    document.getElementById("rollGoBtn").addEventListener("click", () => {
-  const roll = document.getElementById("rollInput").value.trim();
-  if (!roll) {
-    showError("कृपया roll number भरें।");
-    return;
-  }
-  clearError();
-
-  const params = new URLSearchParams(window.location.search);
-  params.set("roll", roll);
-  const newUrl =
-    window.location.pathname + "?" + params.toString() + window.location.hash;
-  window.history.replaceState({}, "", newUrl);
-
-  // 👇 अब पहले WhatsApp open, फिर result load
-  openWhatsAppThenLoad(roll);
-});
 
   </script>
 </body>
