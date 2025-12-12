@@ -150,50 +150,42 @@
       }
 
       async function loadList(){
-        try{
-          setStatus('Loading...');
-          const cat = categoryEl.value;
-          const limit = Number(limitEl.value) || 100;
+  try{
+    setStatus('Loading...');
+    const cat = categoryEl.value;
+    const limit = Number(limitEl.value) || 100;
 
-          // call backend — expecting mode=top_list
-          const params = new URLSearchParams();
-          params.set('mode','top_list');
-          params.set('category',cat);
-          params.set('limit',String(limit));
+    const params = new URLSearchParams();
+    params.set('mode','top_list');
+    params.set('category',cat);
+    params.set('limit',String(limit));
 
-          const url = BACKEND_URL + '?' + params.toString();
-          const res = await fetch(url, {cache:'no-store'});
-          if(!res.ok) throw new Error('HTTP '+res.status);
-          const data = await res.json();
+    const url = BACKEND_URL + '?' + params.toString();
+    const res = await fetch(url, {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
 
-          if(data.error){ setStatus('Error: '+data.error); renderRows([]); return; }
+    if(data.error){
+      setStatus('Error: '+data.error);
+      renderRows([]);
+      metaEl.textContent = '';
+      return;
+    }
 
-          // backend may return results array or raw rows; we defensively accept both
-          let rows = data.results || data.rows || [];
+    // server returns { results: [...], totalInCategory, limit, calcTime }
+    const rows = Array.isArray(data.results) ? data.results : [];
+    const out = rows.slice(0, limit); // server already limits, but double-safe
+    renderRows(out);
 
-          // Ensure rows have required fields — if not, map probable column names
-          rows = rows.map(r=>({
-            name: r.name || r.candidate_name || r.name_display || '--',
-            father: r.father || r.father_name || '--',
-            exam_date: r.exam_date || r.examDate || r.exam || '--',
-            gender: r.gender || '--',
-            cet_marks: r.cet_marks != null ? r.cet_marks : (r.marks != null ? r.marks : null)
-          }));
-
-          // Sort on client to be safe and limit
-          const out = sortAndLimit(rows, limit);
-          renderRows(out);
-
-          metaEl.textContent = `Showing ${out.length} of ${rows.length} candidates (category ${cat}).`;
-          setStatus('Loaded successfully. Sorted by CET marks descending.');
-
-        }catch(err){
-          console.error(err);
-          setStatus('Network / backend error: '+err.message);
-          resultTable.innerHTML = '<tr><td colspan="6" class="muted">Error loading data.</td></tr>';
-          metaEl.textContent = '';
-        }
-      }
+    metaEl.textContent = `Showing ${out.length} of ${data.totalInCategory || rows.length} candidates (category ${cat}).`;
+    setStatus('Loaded successfully. Sorted by CET marks descending.');
+  } catch(err){
+    console.error(err);
+    setStatus('Network / backend error: '+err.message);
+    resultTable.innerHTML = '<tr><td colspan="6" class="muted">Error loading data.</td></tr>';
+    metaEl.textContent = '';
+  }
+}
 
       loadBtn.addEventListener('click', loadList);
 
