@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CET Top 100 — Category wise</title>
+    <style>
+      *{box-sizing:border-box}
+      :root{
+        --bg:#020617; --card:#0f172a; --muted:#9ca3af; --text:#e5e7eb; --border:rgba(75,85,99,0.85);
+      }
+      body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:radial-gradient(circle at top,#1e293b 0,#020617 55%),radial-gradient(circle at bottom,#111827 0,#020617 55%);color:var(--text);padding:18px}
+      .wrapper{max-width:1100px;margin:0 auto}
+      .header{text-align:center;margin-bottom:14px}
+      .header h1{margin:6px 0;font-size:1.4rem}
+      .header p{margin:0;color:var(--muted)}
+
+      .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;box-shadow:0 14px 30px rgba(0,0,0,0.5)}
+      .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+      label{font-size:0.8rem;color:var(--muted);}
+      select{padding:8px 10px;border-radius:999px;background:rgba(15,23,42,0.9);border:1px solid rgba(75,85,99,0.8);color:var(--text)}
+      button{padding:8px 14px;border-radius:999px;border:none;background:linear-gradient(120deg,#2563eb,#4f46e5);color:#fff;cursor:pointer}
+
+      .table-wrapper{margin-top:12px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+      table{width:100%;border-collapse:collapse}
+      th,td{padding:8px;text-align:left;font-size:0.9rem}
+      thead th{background:rgba(2,6,23,0.8);font-weight:600}
+      tbody tr:nth-child(even) td{background:rgba(15,23,42,0.95)}
+
+      .muted{color:var(--muted)}
+      .info{margin-top:8px;color:var(--muted)}
+      .small{font-size:0.85rem}
+
+      .social{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+      .pill{padding:6px 10px;border-radius:999px;background:rgba(15,23,42,0.95);border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px;color:var(--text);text-decoration:none}
+      .pill img{width:18px;height:18px}
+
+      @media(max-width:720px){th,td{font-size:0.85rem}}
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <h1>Top 100 CET — Category-wise</h1>
+        <p>Category चुनें — नीचे Top candidates (descending marks) दिखेंगे</p>
+      </div>
+
+      <div class="card">
+        <div class="controls">
+          <div>
+            <label for="categorySelect">Category</label><br />
+            <select id="categorySelect">
+              <option value="GEN">General (GEN)</option>
+              <option value="BCA">BCA</option>
+              <option value="BCB">BCB</option>
+              <option value="OSC">OSC</option>
+              <option value="DSC">DSC</option>
+              <option value="EWS">EWS</option>
+              <option value="SC">SC</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="limitInput">Top</label><br />
+            <select id="limitInput">
+              <option value="50">Top 50</option>
+              <option value="100" selected>Top 100</option>
+              <option value="200">Top 200</option>
+            </select>
+          </div>
+
+          <div style="margin-left:auto">
+            <button id="loadBtn">🔄 Load List</button>
+          </div>
+        </div>
+
+        <div class="info small" id="status">Select category and press "Load List" — Backend should provide API at <code>mode=top_list</code>.</div>
+
+        <div class="table-wrapper">
+          <table id="resultTable">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Father's Name</th>
+                <th>Exam Date</th>
+                <th>Gender</th>
+                <th>CET Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" class="muted">List will appear here after loading.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="info small" id="meta"></div>
+
+      </div>
+
+      <div class="social">
+        <a class="pill" href="https://instagram.com/adv_kanha73" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="insta">Instagram</a>
+        <a class="pill" href="https://whatsapp.com/channel/0029Vb6kNhq8fewpVWfe1m1s" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="wa">WhatsApp</a>
+        <a class="pill" href="https://t.me/cetranker" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="tg">Telegram</a>
+      </div>
+
+    </div>
+
+    <script>
+      // Backend URL — change to your deployed Apps Script exec URL
+      const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwHo7ecIYJP-ekEOfsCnD1BUtbSJ_nF6ZNZ2vi_hsQb6fyA0GBurHQTxWbPrm0DKZzOIQ/exec";
+
+      const categoryEl = document.getElementById('categorySelect');
+      const limitEl = document.getElementById('limitInput');
+      const loadBtn = document.getElementById('loadBtn');
+      const statusEl = document.getElementById('status');
+      const resultTable = document.getElementById('resultTable').querySelector('tbody');
+      const metaEl = document.getElementById('meta');
+
+      function setStatus(s){ statusEl.textContent = s; }
+
+      function renderRows(list){
+        resultTable.innerHTML = '';
+        if(!list || !list.length){
+          resultTable.innerHTML = '<tr><td colspan="6" class="muted">No results found for selected category.</td></tr>';
+          return;
+        }
+        for(let i=0;i<list.length;i++){
+          const r = list[i];
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${i+1}</td>
+            <td>${r.name || '--'}</td>
+            <td>${r.father || '--'}</td>
+            <td>${r.exam_date || '--'}</td>
+            <td>${r.gender || '--'}</td>
+            <td>${r.cet_marks != null ? r.cet_marks : '--'}</td>
+          `;
+          resultTable.appendChild(tr);
+        }
+      }
+
+      // Sort descending by cet_marks (numeric) and trim to limit
+      function sortAndLimit(rows, limit){
+        return rows.slice().sort((a,b)=>{
+          const ma = Number(a.cet_marks)||0; const mb = Number(b.cet_marks)||0;
+          return mb - ma;
+        }).slice(0, limit);
+      }
+
+      async function loadList(){
+        try{
+          setStatus('Loading...');
+          const cat = categoryEl.value;
+          const limit = Number(limitEl.value) || 100;
+
+          // call backend — expecting mode=top_list
+          const params = new URLSearchParams();
+          params.set('mode','top_list');
+          params.set('category',cat);
+          params.set('limit',String(limit));
+
+          const url = BACKEND_URL + '?' + params.toString();
+          const res = await fetch(url, {cache:'no-store'});
+          if(!res.ok) throw new Error('HTTP '+res.status);
+          const data = await res.json();
+
+          if(data.error){ setStatus('Error: '+data.error); renderRows([]); return; }
+
+          // backend may return results array or raw rows; we defensively accept both
+          let rows = data.results || data.rows || [];
+
+          // Ensure rows have required fields — if not, map probable column names
+          rows = rows.map(r=>({
+            name: r.name || r.candidate_name || r.name_display || '--',
+            father: r.father || r.father_name || '--',
+            exam_date: r.exam_date || r.examDate || r.exam || '--',
+            gender: r.gender || '--',
+            cet_marks: r.cet_marks != null ? r.cet_marks : (r.marks != null ? r.marks : null)
+          }));
+
+          // Sort on client to be safe and limit
+          const out = sortAndLimit(rows, limit);
+          renderRows(out);
+
+          metaEl.textContent = `Showing ${out.length} of ${rows.length} candidates (category ${cat}).`;
+          setStatus('Loaded successfully. Sorted by CET marks descending.');
+
+        }catch(err){
+          console.error(err);
+          setStatus('Network / backend error: '+err.message);
+          resultTable.innerHTML = '<tr><td colspan="6" class="muted">Error loading data.</td></tr>';
+          metaEl.textContent = '';
+        }
+      }
+
+      loadBtn.addEventListener('click', loadList);
+
+      // load default (GEN top100)
+      document.addEventListener('DOMContentLoaded', ()=>{
+        // auto-load default selection
+        loadList();
+      });
+    </script>
+  </body>
+</html>
