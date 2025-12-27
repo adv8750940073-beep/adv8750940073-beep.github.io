@@ -107,6 +107,45 @@
 
     </div>
 
+<script>
+  /* ===============================
+     HELPER FUNCTIONS (SAFE ADD)
+     =============================== */
+
+  // 🔒 Name masking (privacy)
+  function maskName(name){
+    if(!name) return '--';
+    return name.split(' ').map(p=>{
+      if(p.length <= 2) return p[0] + '*';
+      return p.slice(0,2) + '***';
+    }).join(' ');
+  }
+
+  // 🔢 Roll normalize
+  function normalizeRoll(r){
+    return String(r || '')
+      .trim()
+      .replace(/\s+/g,'')
+      .replace(/^0+/,'');
+  }
+
+  // ❌ Duplicate roll remove
+  function uniqueByRoll(rows){
+    const seen = new Map();
+    for(const r of rows){
+      const roll = normalizeRoll(
+        r.roll || r.roll_no || r.registration || r.reg_no
+      );
+      if(!roll) continue;
+      if(!seen.has(roll)){
+        seen.set(roll, {...r, _roll: roll});
+      }
+    }
+    return Array.from(seen.values());
+  }
+</script>
+
+    
     <script>
       // Backend URL — change to your deployed Apps Script exec URL
       const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwHo7ecIYJP-ekEOfsCnD1BUtbSJ_nF6ZNZ2vi_hsQb6fyA0GBurHQTxWbPrm0DKZzOIQ/exec";
@@ -131,8 +170,8 @@
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${i+1}</td>
-            <td>${r.name || '--'}</td>
-            <td>${r.father || '--'}</td>
+            <td>${maskName(r.name)}</td>
+            <td>${maskName(r.father)}</td>
             <td>${r.exam_date || '--'}</td>
             <td>${r.gender || '--'}</td>
             <td>${r.cet_marks != null ? r.cet_marks : '--'}</td>
@@ -174,8 +213,23 @@
 
     // server returns { results: [...], totalInCategory, limit, calcTime }
     const rows = Array.isArray(data.results) ? data.results : [];
-    const out = rows.slice(0, limit); // server already limits, but double-safe
-    renderRows(out);
+
+// ✅ Step-1: Duplicate remove
+const uniqueRows = uniqueByRoll(rows);
+
+// ✅ Step-2: Marks wise sort (DESC)
+uniqueRows.sort((a,b)=>{
+  return (Number(b.cet_marks)||0) - (Number(a.cet_marks)||0);
+});
+
+// ✅ Step-3: Limit after dedupe
+const out = uniqueRows.slice(0, limit);
+
+// ✅ Step-4: Render
+renderRows(out);
+
+metaEl.textContent = `Showing Top ${out.length} candidates (category ${cat}).`;
+
 
     // पुरानी लाइन (जो आप हटाना/बदले बिना दिखाई दे रही थी)
 // metaEl.textContent = `Showing ${out.length} of ${data.totalInCategory || rows.length} candidates (category ${cat}).`;
