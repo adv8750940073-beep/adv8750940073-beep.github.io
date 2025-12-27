@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CET Online Test</title>
+
+<style>
+body{
+  font-family:system-ui;
+  background:#020617;
+  color:#e5e7eb;
+  padding:14px;
+}
+.card{
+  max-width:900px;
+  margin:auto;
+  background:#0f172a;
+  border:1px solid #334155;
+  border-radius:14px;
+  padding:15px;
+}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+.timer{
+  background:#111827;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:600;
+}
+.question{
+  border:1px solid #334155;
+  border-radius:10px;
+  padding:12px;
+  margin-top:12px;
+}
+.option{
+  margin:6px 0;
+}
+button{
+  margin-top:14px;
+  padding:10px 18px;
+  border:none;
+  border-radius:999px;
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+}
+.hidden{display:none}
+.result{
+  margin-top:16px;
+  font-size:1.1rem;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="topbar">
+  <div><b>CET Mock Test</b></div>
+  <div class="timer" id="timer">--:--</div>
+</div>
+
+<div id="quiz"></div>
+
+<button id="submitBtn" onclick="submitTest()">Submit Test</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+/* ===== CONFIG ===== */
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbykOLwPfiZPECfydtBY-H2o1UgBE0E9bf3tNHeuyVuzPL2N8C5RsADOD8CTin1RASb9/exec";
+const TOTAL_QUESTIONS = 20;   // test size
+const TIME_MINUTES = 20;      // test time
+
+let questions = [];
+let answers = {};
+let timeLeft = TIME_MINUTES * 60;
+let timerRef = null;
+
+/* ===== LOAD QUESTIONS ===== */
+async function loadTest(){
+  const url = `${BACKEND_URL}?action=questions&limit=${TOTAL_QUESTIONS}`;
+  const res = await fetch(url,{cache:"no-store"});
+  const data = await res.json();
+
+  if(!Array.isArray(data) || !data.length){
+    document.getElementById("quiz").innerHTML =
+      "<p>❌ Questions load नहीं हो सके</p>";
+    return;
+  }
+
+  questions = data;
+  renderQuestions();
+  startTimer();
+}
+
+/* ===== RENDER ===== */
+function renderQuestions(){
+  const quiz = document.getElementById("quiz");
+  quiz.innerHTML = "";
+
+  questions.forEach((q,i)=>{
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `
+      <b>Q${i+1}. ${q.question}</b>
+      <div class="option">
+        <label><input type="radio" name="q${i}" value="A"> A) ${q.A}</label>
+      </div>
+      <div class="option">
+        <label><input type="radio" name="q${i}" value="B"> B) ${q.B}</label>
+      </div>
+      <div class="option">
+        <label><input type="radio" name="q${i}" value="C"> C) ${q.C}</label>
+      </div>
+      <div class="option">
+        <label><input type="radio" name="q${i}" value="D"> D) ${q.D}</label>
+      </div>
+    `;
+    quiz.appendChild(div);
+  });
+}
+
+/* ===== TIMER ===== */
+function startTimer(){
+  updateTimerUI();
+  timerRef = setInterval(()=>{
+    timeLeft--;
+    updateTimerUI();
+    if(timeLeft <= 0){
+      clearInterval(timerRef);
+      submitTest(true);
+    }
+  },1000);
+}
+
+function updateTimerUI(){
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  document.getElementById("timer").textContent =
+    `${m}:${s.toString().padStart(2,"0")}`;
+}
+
+/* ===== SUBMIT ===== */
+function submitTest(auto=false){
+  if(timerRef) clearInterval(timerRef);
+  document.getElementById("submitBtn").disabled = true;
+
+  let score = 0;
+
+  questions.forEach((q,i)=>{
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if(sel){
+      answers[i] = sel.value;
+      // correct answer backend से future में आएगा
+      // अभी demo scoring = attempted
+      score++;
+    }
+  });
+
+  document.getElementById("result").innerHTML = `
+    ✅ Test Submitted ${auto ? "(Auto)" : ""}
+    <br>Score: <b>${score}</b> / ${questions.length}
+  `;
+
+  saveResult(score);
+}
+
+/* ===== SAVE RESULT ===== */
+function saveResult(score){
+  fetch(BACKEND_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      mode:"result",
+      testId:1,
+      roll:"DEMO",
+      name:"Student",
+      score:score,
+      timeTaken:(TIME_MINUTES*60 - timeLeft)
+    })
+  });
+}
+
+/* ===== START ===== */
+loadTest();
+</script>
+
+</body>
+</html>
