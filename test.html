@@ -86,6 +86,10 @@ let answers = {};
 let timeLeft = TIME_MINUTES * 60;
 let timerRef = null;
 
+  /***Test settings***/
+ const MARKS_PER_QUESTION = 1;
+ const NEGATIVE_MARK = 0.25;   // CET style
+ 
 /* ===== LOAD QUESTIONS ===== */
 async function loadTest(){
   const url = `${BACKEND_URL}?action=questions&limit=${TOTAL_QUESTIONS}`;
@@ -155,28 +159,44 @@ function submitTest(auto=false){
   if(timerRef) clearInterval(timerRef);
   document.getElementById("submitBtn").disabled = true;
 
-  let score = 0;
+  let correct = 0;
+  let wrong = 0;
+  let attempted = 0;
 
   questions.forEach((q,i)=>{
     const sel = document.querySelector(`input[name="q${i}"]:checked`);
     if(sel){
-      answers[i] = sel.value;
-      // correct answer backend से future में आएगा
-      // अभी demo scoring = attempted
-      score++;
+      attempted++;
+      if(sel.value === q.correct){
+        correct++;
+      }else{
+        wrong++;
+      }
     }
   });
 
+  const score =
+    (correct * MARKS_PER_QUESTION) -
+    (wrong * NEGATIVE_MARK);
+
   document.getElementById("result").innerHTML = `
-    ✅ Test Submitted ${auto ? "(Auto)" : ""}
-    <br>Score: <b>${score}</b> / ${questions.length}
+    ✅ Test Submitted ${auto ? "(Auto)" : ""}<br><br>
+    ✔️ Correct: ${correct}<br>
+    ❌ Wrong: ${wrong}<br>
+    ➖ Unattempted: ${questions.length - attempted}<br>
+    📊 Final Score: <b>${score.toFixed(2)}</b>
   `;
 
-  saveResult(score);
+  saveResult({
+    score: score.toFixed(2),
+    correct,
+    wrong,
+    attempted
+  });
 }
 
-/* ===== SAVE RESULT ===== */
-function saveResult(score){
+  /* ===== SAVE RESULT ===== */
+function saveResult(obj){
   fetch(BACKEND_URL,{
     method:"POST",
     body:JSON.stringify({
@@ -184,7 +204,9 @@ function saveResult(score){
       testId:1,
       roll:"DEMO",
       name:"Student",
-      score:score,
+      score:obj.score,
+      correct:obj.correct,
+      wrong:obj.wrong,
       timeTaken:(TIME_MINUTES*60 - timeLeft)
     })
   });
